@@ -1,4 +1,4 @@
-Language: [English] [简体中文](./cn_README.md) **한국어**
+Language: [简体中文](./cn_README.md) **한국어**
 Translate into Korean by JS Park on 2024-06-11.
 
 # DDSP-SVC
