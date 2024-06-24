@@ -1,6 +1,52 @@
-Language: [简体中文](./cn_README.md) **한국어**
+# Local GPU에서 DDSP-SVC 사용법
+
+## 0. 코드 구동을 위한 프로그램 설치 및 코드, 체크포인트 다운로드
+1. FFmpeg 설치
+    - [FFmpeg 다운로드](https://ffmpeg.org/download.html)
+    - 다운로드 후 압축 해제한 폴더/bin을 PATH 환경 변수에 추가
+2. CUDA 11.8 설치
+    - [CUDA 11.8 다운로드](https://developer.nvidia.com/cuda-11-8-0-download-archive)
+    - 시스템 재시작을 요구할 수 있음
+3. C++ Build Tools로 C++ 14.x 버전 설치
+    - [Build Tools 다운로드](https://visualstudio.microsoft.com/ko/visual-cpp-build-tools/)
+    - 선택 항목 포함하여 설치
+        - C++를 사용한 데스크톱 개발 > MSVC, Windows 11 SDK, Windows 10 SDK(10.0.20348.0), Windows용 C++ CMake 도구, C++ AddressSanitizer
+4. 체크포인트 다운로드
+    - **(필수)** [**HubertSoft**](https://github.com/bshall/hubert/releases/download/v0.1/hubert-soft-0d54a1f4.pt) 인코더를 다운로드 후 `pretrain/hubert` 폴더 내에 삽입
+        - (선택) [ContentVec](https://ibm.ent.box.com/s/z1wgl1stco8ffooyatzdwsqn2psd9lrr)을 Hubert 대신 사용할 수 있으나, 이 경우 config 조정 필요
+    - **(필수)** 사전 학습된 Vocoder를 사용하기 위해 [DiffSinger Community Vocoders Project](https://openvpi.github.io/vocoders)에서 Downloads 섹션의 link를 통해 nsf_hifigan_20221211.zip 다운로드 후 `pretrain/` 폴더 내에 압축 해제
+
+## 1. 학습 환경 세팅
+- 관리자 권한으로 프롬프트 실행
+- 가상환경 생성 및 진입
+- PyTorch 설치
+    - [**Official Website**](https://pytorch.org/)
+    - 본인의 CUDA 버전에 맞게 다운로드
+    - `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
+- 필요 라이브러리 모두 설치
+    - `pip install -r requirements.txt`
+
+## 2. 데이터 준비, 전처리, 학습
+- `notebook.ipynb` 내용 순서대로 진행
+- Jupyter Lab 실행 방법
+    - 프롬프트에 `jupyter-lab`을 입력하면 브라우저 자동 실행
+    - 만약 열리지 않으면 브라우저를 켜고 `localhost:8888/lab`으로 이동
+- 좌측 파일 목록에서 `notebook.ipynb`를 열고, 본인의 조건에 따라 데이터 전처리부터 학습까지 진행
+
+## 3. 결과 추론
+- `notebook.ipynb` 중 `4. 결과물 뽑기`에서 다음 3가지를 설정
+    ```
+    'model_path'    :   'exp/combsub-test/model_best.pt'    # 추론에 사용하고자 하는 모델. 위에서 학습한 모델 가져오기
+    'input'         :   'data/train/audio/video-0000.wav'   # 추론하고자 하는 노래 파일의 위치
+    'output'        :   'output.wav'                        # 결과물 파일을 저장할 위치
+    ```
+
+
+---
+Language: [简体中文](./cn_README.md) **한국어/English**
 
 Translate into Korean by JS Park on 2024-06-11.
+
 
 # DDSP-SVC
 
