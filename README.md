@@ -1,9 +1,10 @@
-# Local GPU에서 DDSP-SVC 사용법
+# DDSP-SVC 사용자 매뉴얼
 
-## 0. 코드 구동을 위한 프로그램 설치 및 코드, 체크포인트 다운로드
+
+## 0. 프로그램 설치 및 체크포인트 다운로드
 1. FFmpeg 설치
     - [FFmpeg 다운로드](https://ffmpeg.org/download.html)
-    - 다운로드 후 압축 해제한 폴더/bin을 PATH 환경 변수에 추가
+    - 다운로드 후 압축 해제한 폴더 내 bin 경로를 환경 변수 PATH에 추가
 2. CUDA 11.8 설치
     - [CUDA 11.8 다운로드](https://developer.nvidia.com/cuda-11-8-0-download-archive)
     - 시스템 재시작을 요구할 수 있음
@@ -12,59 +13,61 @@
     - 선택 항목 포함하여 설치
         - C++를 사용한 데스크톱 개발 > MSVC, Windows 11 SDK, Windows 10 SDK(10.0.20348.0), Windows용 C++ CMake 도구, C++ AddressSanitizer
 4. 체크포인트 다운로드
-    - **(필수)** [**HubertSoft**](https://github.com/bshall/hubert/releases/download/v0.1/hubert-soft-0d54a1f4.pt) 인코더를 다운로드 후 `pretrain/hubert` 폴더 내에 삽입
-        - (선택) [ContentVec](https://ibm.ent.box.com/s/z1wgl1stco8ffooyatzdwsqn2psd9lrr)을 Hubert 대신 사용할 수 있으나, 이 경우 config 조정 필요
+    - **(필수)** [**ContentVec**](https://ibm.ent.box.com/s/z1wgl1stco8ffooyatzdwsqn2psd9lrr) 인코더를 다운로드 후 `pretrain/contentvec` 폴더 내에 삽입
+        - (선택) [HubertSoft](https://github.com/bshall/hubert/releases/download/v0.1/hubert-soft-0d54a1f4.pt)를 ContentVec 대신 사용할 수 있으나, 이 경우 configs 조정 필요
     - **(필수)** 사전 학습된 Vocoder를 사용하기 위해 [DiffSinger Community Vocoders Project](https://openvpi.github.io/vocoders)에서 Downloads 섹션의 link를 통해 nsf_hifigan_20221211.zip 다운로드 후 `pretrain/` 폴더 내에 압축 해제
 
 ## 1. 학습 환경 세팅
-- 관리자 권한으로 프롬프트 실행
-- 가상환경 생성 및 진입
 - PyTorch 설치
     - [**Official Website**](https://pytorch.org/)
-    - 본인의 CUDA 버전에 맞게 다운로드
+    - 본인의 CUDA 버전과 매칭되는 버전 다운로드
     - `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
 - 필요 라이브러리 모두 설치
     - `pip install -r requirements.txt`
 
 ## 2. 데이터 준비, 전처리, 학습
-- `notebook.ipynb` 내용 순서대로 진행
+- `notebook2.ipynb` 내용 순서대로 진행
+    - 기본 GUI는 중국어만 지원하는 관계로, 한국어로 새롭게 작성한 직관적인 Jypyter Notebook
 - Jupyter Lab 실행 방법
     - 프롬프트에 `jupyter-lab`을 입력하면 브라우저 자동 실행
     - 만약 열리지 않으면 브라우저를 켜고 `localhost:8888/lab`으로 이동
-- 좌측 파일 목록에서 `notebook.ipynb`를 열고, 본인의 조건에 따라 데이터 전처리부터 학습까지 진행
+    - Visual Studio Code 등 ipynb를 지원하는 편집기에서도 실행 가능
+    - 좌측 파일 목록에서 `notebook2.ipynb`를 열고, 본인의 조건에 따라 전처리부터 학습까지 진행
 
 ## 3. 결과 추론
-- `notebook.ipynb` 중 `4. 결과물 뽑기`에서 다음 3가지를 설정
+- `notebook2.ipynb` 중 `4. 결과물 추출`에서 기본 환경 요소 설정
     ```
-    'model_path'    :   'exp/combsub-test/model_best.pt'    # 추론에 사용하고자 하는 모델. 위에서 학습한 모델 가져오기
-    'input'         :   'data/train/audio/video-0000.wav'   # 추론하고자 하는 노래 파일의 위치
-    'output'        :   'output.wav'                        # 결과물 파일을 저장할 위치
+    'model_path'    :   'exp/combsub-test/model_best.pt',    # 모델 파일 경로
+    'input'         :   'data/train/audio/video-0000.wav',   # 원본 노래 파일 경로
+    'output'        :   'output.wav',                        # 출력 파일 저장할 경로
     ```
+- 위 3가지 외에도 다양한 환경 설정이 필요할 경우 `main.py`의 요소별 help 참조   
 
 
 ---
 Language: [简体中文](./cn_README.md) **한국어/English**
 
-Translate into Korean by JS Park on 2024-06-11.
+Translated into Korean by JS Park on 2024-06-11.
+Last modified by JS Park on 2024-07-12.
 
 
 # DDSP-SVC
 
 ## (6.0 - 실험 단계) 새로운 정류 흐름 기반 모델
 
-(1) 전처리(Preprocessing)：
+(1) 전처리(Preprocessing):
 
 ```bash
 python preprocess.py -c configs/reflow.yaml
 ```
 
-(2) 훈련(Training)：
+(2) 훈련(Training):
 
 ```bash
 python train_reflow.py -c configs/reflow.yaml
 ```
 
-(3) 비실시간 추론(Non-real-time inference)：
+(3) 비실시간 추론(Non-real-time inference):
 
 ```bash
 python main_reflow.py -i <input.wav> -m <model_ckpt.pt> -o <output.wav> -k <keychange (semitones)> -id <speaker_id> -step <infer_step> -method <method> -ts <t_start>
@@ -84,19 +87,19 @@ We provide a pre-trained model in the release page.
 `diffusion-fast.yaml`의 'expdir' 매개변수로 지정된 모델 내보내기 폴더로 `model_0.pt`를 이동하면, 해당 폴더에 사전 훈련된 모델을 프로그램이 자동으로 불러올 것입니다.  
 Move the `model_0.pt` to the model export folder specified by the 'expdir' parameter in `diffusion-fast.yaml`, and the program will automatically load the pre-trained model in that folder.
 
-(1) 전처리(Preprocessing)：
+(1) 전처리(Preprocessing):
 
 ```bash
 python preprocess.py -c configs/diffusion-fast.yaml
 ```
 
-(2) 캐스케이드 모델(하나의 모델만) 훈련(Train a cascade model; only train one model)：
+(2) 캐스케이드 모델 훈련; 하나의 모델만 훈련(Train a cascade model; only train one model):
 
 ```bash
 python train_diff.py -c configs/diffusion-fast.yaml
 ```
 
-(3) 비실시간 추론(Non-real-time inference)：
+(3) 비실시간 추론(Non-real-time inference):
 
 ```bash
 python main_diff.py -i <input.wav> -diff <diff_ckpt.pt> -o <output.wav> -k <keychange (semitones)> -id <speaker_id> -speedup <speedup> -method <method> -kstep <kstep>
@@ -105,7 +108,7 @@ python main_diff.py -i <input.wav> -diff <diff_ckpt.pt> -o <output.wav> -k <keyc
 5.0 버전 모델에는 DDSP 모델이 내장되어 있으므로 `-ddsp`를 사용하여 외부 DDSP 모델을 지정할 필요가 없습니다. 다른 옵션은 3.0 버전 모델과 같은 의미지만, 'kstep'은 구성 파일에서의 `k_step_max`보다 작거나 같아야 하므로 동일하게 유지하는 것이 좋습니다(기본값은 100).  
 The 5.0 version model has a built-in DDSP model, so specifying an external DDSP model using `-ddsp` is unnecessary. The other options have the same meaning as the 3.0 version model, but 'kstep' needs to be less than or equal to `k_step_max` in the configuration file, it is recommended to keep it equal (the default is 100)
 
-(4) 실시간 GUI(Real-time GUI)：
+(4) 실시간 GUI(Real-time GUI):
 
 ```bash
 python gui_diff.py
@@ -141,7 +144,7 @@ Because the diffusion model is more difficult to train, we provide some pre-trai
 `diffusion.yaml`의 'expdir' 매개변수로 지정된 모델 내보내기 폴더로 `model_0.pt`를 이동하면, 해당 폴더에 사전 훈련된 모델을 프로그램이 자동으로 불러올 것입니다.  
 Move the `model_0.pt` to the model export folder specified by the 'expdir' parameter in `diffusion.yaml`, and the program will automatically load the pre-trained models in that folder.
 
-(1) 전처리(Preprocessing)：
+(1) 전처리(Preprocessing):
 
 ```bash
 python preprocess.py -c configs/diffusion.yaml
@@ -149,13 +152,13 @@ python preprocess.py -c configs/diffusion.yaml
 
 This preprocessing can also be used to train the DDSP model without preprocessing twice, but you need to ensure that the parameters under the 'data' tag in yaml files are consistent.
 
-(2) 확산 모델 훈련(Train a diffusion model)：
+(2) 확산 모델 훈련(Train a diffusion model):
 
 ```bash
 python train_diff.py -c configs/diffusion.yaml
 ```
 
-(3) DDSP 모델 학습(Train a DDSP model)：
+(3) DDSP 모델 학습(Train a DDSP model):
 
 ```bash
 python train.py -c configs/combsub.yaml
@@ -164,7 +167,7 @@ python train.py -c configs/combsub.yaml
 위에서 언급했듯 재전처리(re-preprocessing)는 필요하지 않지만, `combsub.yaml`과 `diffusion.yaml`의 매개변수가 일치하는지 확인하시기 바랍니다. 화자 수 'n_spk'는 일관성이 없을 수 있지만 동일한 화자를 나타내기 위해 동일한 ID를 사용하십시오(이렇게 하면 추론이 더 쉬워집니다).  
 As mentioned above, re-preprocessing is not required, but please check whether the parameters of `combsub.yaml` and `diffusion.yaml` match. The number of speakers 'n_spk' can be inconsistent, but try to use the same id to represent the same speaker (this makes inference easier).
 
-(4) 비실시간 추론(Non-real-time inference)：
+(4) 비실시간 추론(Non-real-time inference):
 
 ```bash
 python main_diff.py -i <input.wav> -ddsp <ddsp_ckpt.pt> -diff <diff_ckpt.pt> -o <output.wav> -k <keychange (semitones)> -id <speaker_id> -diffid <diffusion_speaker_id> -speedup <speedup> -method <method> -kstep <kstep>
@@ -184,7 +187,7 @@ If '-ddsp' is empty, the pure diffusion model is used, at this time, shallow dif
 프로그램은 DDSP 모델과 확산 모델의 매개변수들이 일치하는지(샘플링 속도, hop 크기 및 인코더)를 자동으로 확인하고, 만약 일치하지 않을 경우 DDSP 모델 로드를 무시하고 가우시안 확산 모드로 들어갑니다.  
 The program will automatically check whether the parameters of the DDSP model and the diffusion model match (sampling rate, hop size and encoder), and if they do not match, it will ignore loading the DDSP model and enter Gaussian diffusion mode.
 
-(5) 실시간 GUI(Real-time GUI)：
+(5) 실시간 GUI(Real-time GUI):
 
 ```bash
 python gui_diff.py
@@ -199,7 +202,7 @@ DDSP-SVC is a new open source singing voice conversion project dedicated to the 
 Compared with the famous [SO-VITS-SVC](https://github.com/svc-develop-team/so-vits-svc), its training and synthesis have much lower requirements for computer hardware, and the training time can be shortened by orders of magnitude, which is close to the training speed of [RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI).
 
 또한, 실시간 음성 변경을 수행할 때 이 프로젝트의 하드웨어 리소스 소비는 SO-VITS-SVC보다 훨씬 낮지만 최신 버전의 RVC보다는 약간 높을 수 있습니다.  
-In addition, when performing real-time voice changing, the hardware resource consumption of this project is significantly lower than that of SO-VITS-SVC，but probably slightly higher than the latest version of RVC.
+In addition, when performing real-time voice changing, the hardware resource consumption of this project is significantly lower than that of SO-VITS-SVC, but probably slightly higher than the latest version of RVC.
 
 비록 기존 DDSP의 합성 품질은 이상적이지 않지만(기존 출력은 훈련 중에 텐서보드에서 들을 수 있음), 사전 훈련된 보코더 기반 인핸서(구 버전) 또는 얕은 확산 모델(신 버전)로 음질을 향상시킨 후에는 일부 데이터셋에서 SO-VITS-SVC 및 RVC 이상의 합성 품질을 달성할 수 있습니다.  
 Although the original synthesis quality of DDSP is not ideal (the original output can be heard in tensorboard while training), after enhancing the sound quality with a pre-trained vocoder based enhancer (old version) or with a shallow diffusion model (new version), for some datasets, it can achieve the synthesis quality no less than SO-VITS-SVC and RVC.
@@ -285,8 +288,8 @@ python preprocess.py -c configs/sins.yaml
 확산 모델 훈련에 대한 자세한 내용은 상단의 섹션 3.0, 4.0 또는 5.0을 참조하세요.  
 For training the diffusion model, see section 3.0, 4.0 or 5.0 above.
 
-전처리 전에 구성 파일 `config/<model_name>.yaml`을 수정할 수 있습니다. 기본 구성은 GTX 1660 그래픽 카드를 사용하여 44.1khz high sampling rate synthesiser를 훈련시키는 데 맞춰져 있습니다.  
-You can modify the configuration file `config/<model_name>.yaml` before preprocessing. The default configuration is suitable for training 44.1khz high sampling rate synthesiser with GTX 1660 graphics card.
+전처리 전에 구성 파일 `configs/<model_name>.yaml`을 수정할 수 있습니다. 기본 구성은 GTX 1660 그래픽 카드를 사용하여 44.1khz high sampling rate synthesiser를 훈련시키는 데 맞춰져 있습니다.  
+You can modify the configuration file `configs/<model_name>.yaml` before preprocessing. The default configuration is suitable for training 44.1khz high sampling rate synthesiser with GTX 1660 graphics card.
 
 참고 1: 모든 오디오 클립의 샘플링 속도를 yaml 구성 파일의 샘플링 속도와 일관되게 유지하십시오! 일관성이 없어도 프로그램 실행은 가능하지만 훈련 과정 중 리샘플링이 매우 느립니다.  
 NOTE 1: Please keep the sampling rate of all audio clips consistent with the sampling rate in the yaml configuration file! If it is not consistent, the program can be executed safely, but the resampling during the training process will be very slow.
@@ -387,8 +390,8 @@ Raw output of DDSP:
 python main.py -i <input.wav> -m <model_file.pt> -o <output.wav> -k <keychange (semitones)> -id <speaker_id> -e false
 ```
 
-f0 추출기 및 response threhold에 대한 다른 옵션에 대해서는 다음을 참조:  
-Other options about the f0 extractor and response threhold，see:
+f0 추출기 및 response threhold에 대한 다른 옵션에 대해서는 다음을 참조하세요:  
+Other options about the f0 extractor and response threhold, see:
 
 ```bash
 python main.py -h
@@ -417,18 +420,8 @@ The front-end uses technologies such as sliding window, cross-fading, SOLA-based
 업데이트: 위상(phase) 보코더를 기반으로 한 접합 알고리즘이 추가되었지만, 대부분의 경우 SOLA 알고리즘이 이미 충분히 높은 접합 음질을 갖고 있으므로 기본적으로 꺼져 있습니다. 극도로 저지연 실시간 음질을 추구하는 경우 해당 옵션을 켜고 파라미터를 신중하게 튜닝하는 것을 고려할 수 있으며, 음질이 높아질 가능성이 있습니다. 그러나 많은 테스트에서 크로스 페이드 시간이 0.1초보다 길면 위상 보코더가 음질을 크게 저하시키는 것으로 나타났습니다.  
 Update: A splicing algorithm based on a phase vocoder is now added, but in most cases the SOLA algorithm already has high enough splicing sound quality, so it is turned off by default. If you are pursuing extreme low-latency real-time sound quality, you can consider turning it on and tuning the parameters carefully, and there is a possibility that the sound quality will be higher. However, a large number of tests have found that if the cross-fade time is longer than 0.1 seconds, the phase vocoder will cause a significant degradation in sound quality.
 
-## 8. 감사의 글
+## 8. 원글
 
-- [DDSP](https://github.com/magenta/ddsp)
-
-- [PC-DDSP](https://github.com/yxlllc/pc-ddsp)
-
-- [Soft-VC](https://github.com/bshall/soft-vc)
-
-- [ContentVec](https://github.com/auspicious3000/contentvec)
-
-- [DiffSinger (OpenVPI version)](https://github.com/openvpi/DiffSinger)
-
-- [Diff-SVC](https://github.com/prophesier/diff-svc)
-
-- [Diffusion-SVC](https://github.com/CNChTu/Diffusion-SVC)
+- yxlllc/DDSP-SVC[https://github.com/yxlllc/DDSP-SVC]
+- wlsdml1114/DDSP-SVC-KOR[https://github.com/wlsdml1114/DDSP-SVC-KOR]
+    - forked from yxlllc/DDSP-SVC (outdated version)
