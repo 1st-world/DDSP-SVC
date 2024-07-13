@@ -1,23 +1,29 @@
 # DDSP-SVC 사용자 매뉴얼
-
+**면책 조항 :** 본 문서와 프로젝트는 오로지 학습 교류 목적으로만 작성되었습니다.  
+합법적으로 획득한 데이터로만 모델을 훈련하고, 모델과 합성한 오디오를 불법적인 목적으로 사용하지 마십시오.  
+본 프로젝트의 모델을 사용하여 발생할 수 있는 저작권 등의 문제에 대해서 책임을 지지 않습니다.  
 
 ## 0. 프로그램 설치 및 체크포인트 다운로드
 1. FFmpeg 설치
-    - [FFmpeg 다운로드](https://ffmpeg.org/download.html)
+    - [**Official Website**](https://ffmpeg.org/download.html)
     - 다운로드 후 압축 해제한 폴더 내 bin 경로를 환경 변수 PATH에 추가
 2. CUDA 11.8 설치
-    - [CUDA 11.8 다운로드](https://developer.nvidia.com/cuda-11-8-0-download-archive)
+    - [**Official Website**](https://developer.nvidia.com/cuda-11-8-0-download-archive)
     - 시스템 재시작을 요구할 수 있음
-3. C++ Build Tools로 C++ 14.x 버전 설치
-    - [Build Tools 다운로드](https://visualstudio.microsoft.com/ko/visual-cpp-build-tools/)
+3. C++ Build Tools로 C++ 14 버전 설치
+    - [**Official Website**](https://visualstudio.microsoft.com/ko/visual-cpp-build-tools/)
     - 선택 항목 포함하여 설치
-        - C++를 사용한 데스크톱 개발 > MSVC, Windows 11 SDK, Windows 10 SDK(10.0.20348.0), Windows용 C++ CMake 도구, C++ AddressSanitizer
+        - C++를 사용한 데스크톱 개발 → MSVC, Windows 11 SDK, Windows용 C++ CMake 도구, C++ AddressSanitizer
 4. 체크포인트 다운로드
     - **(필수)** [**ContentVec**](https://ibm.ent.box.com/s/z1wgl1stco8ffooyatzdwsqn2psd9lrr) 인코더를 다운로드 후 `pretrain/contentvec` 폴더 내에 삽입
         - (선택) [HubertSoft](https://github.com/bshall/hubert/releases/download/v0.1/hubert-soft-0d54a1f4.pt)를 ContentVec 대신 사용할 수 있으나, 이 경우 configs 조정 필요
     - **(필수)** 사전 학습된 Vocoder를 사용하기 위해 [DiffSinger Community Vocoders Project](https://openvpi.github.io/vocoders)에서 Downloads 섹션의 link를 통해 nsf_hifigan_20221211.zip 다운로드 후 `pretrain/` 폴더 내에 압축 해제
 
-## 1. 학습 환경 세팅
+## 1. 학습 환경 설정
+- Python 3.10 설치
+    - [**Official Website**](https://www.python.org/)
+    - 3.12 등 최신 버전은 정상적으로 동작하지 않을 수 있음
+    - 설치 후 가상 환경 세팅
 - PyTorch 설치
     - [**Official Website**](https://pytorch.org/)
     - 본인의 CUDA 버전과 매칭되는 버전 다운로드
@@ -27,7 +33,7 @@
 
 ## 2. 데이터 준비, 전처리, 학습
 - `notebook2.ipynb` 내용 순서대로 진행
-    - 기본 GUI는 중국어만 지원하는 관계로, 한국어로 새롭게 작성한 직관적인 Jypyter Notebook
+    - 기본 GUI는 중국어만 지원하는 관계로, 한국어로 새롭게 작성한 직관적인 Jupyter Notebook
 - Jupyter Lab 실행 방법
     - 프롬프트에 `jupyter-lab`을 입력하면 브라우저 자동 실행
     - 만약 열리지 않으면 브라우저를 켜고 `localhost:8888/lab`으로 이동
@@ -37,19 +43,18 @@
 ## 3. 결과 추론
 - `notebook2.ipynb` 중 `4. 결과물 추출`에서 기본 환경 요소 설정
     ```
-    'model_path'    :   'exp/combsub-test/model_best.pt',    # 모델 파일 경로
-    'input'         :   'data/train/audio/video-0000.wav',   # 원본 노래 파일 경로
-    'output'        :   'output.wav',                        # 출력 파일 저장할 경로
+    # Values input Required
+    'diff_ckpt'         :   'exp/diffusion-test/diff_ckpt.pt',  # 모델 체크포인트 경로
+    'input'             :   'data/train/audio/name_1234.wav',   # 원본 노래 파일 경로
+    'output'            :   'output.wav',                       # 출력 파일 저장할 경로
     ```
-- 위 3가지 외에도 다양한 환경 설정이 필요할 경우 `main.py`의 요소별 help 참조   
-
+- 위 3가지 외에 다른 환경 설정(Optional)이 필요할 경우 `main_diff.py`의 요소별 help 참조   
 
 ---
 Language: [简体中文](./cn_README.md) **한국어/English**
 
-Translated into Korean by JS Park on 2024-06-11.
-Last modified by JS Park on 2024-07-12.
-
+Translated into Korean by JS Park on 2024-06-11.  
+Last modified by JS Park on 2024-07-13.  
 
 # DDSP-SVC
 
@@ -150,6 +155,7 @@ Move the `model_0.pt` to the model export folder specified by the 'expdir' param
 python preprocess.py -c configs/diffusion.yaml
 ```
 
+이 전처리를 사용하면 두 번 전처리하지 않고도 DDSP 모델을 학습할 수 있지만, yaml 파일의 'data' 태그 아래 매개변수가 일관성을 유지하는지 확인해야 합니다.  
 This preprocessing can also be used to train the DDSP model without preprocessing twice, but you need to ensure that the parameters under the 'data' tag in yaml files are consistent.
 
 (2) 확산 모델 훈련(Train a diffusion model):
