@@ -1,4 +1,4 @@
-Language: [English](./README.md) **简体中文**
+Language: [한국어/English](./README.md) **简体中文(outdated)**
 
 # DDSP-SVC
 
