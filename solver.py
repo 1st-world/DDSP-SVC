@@ -71,14 +71,14 @@ def train(args, initial_global_step, model, optimizer, loss_func, loader_train, 
     saver = Saver(args, initial_global_step=initial_global_step)
 
     # model size
-    params_count = utils.get_network_paras_amount({'model': model})
-    saver.log_info('--- model size ---')
+    params_count = utils.get_network_paras_amount({'Model': model})
+    saver.log_info('----- Model Size -----')
     saver.log_info(params_count)
     
     # run
     num_batches = len(loader_train)
     model.train()
-    saver.log_info('======= start training =======')
+    saver.log_info('========== START Training ==========')
     for epoch in range(args.train.epochs):
         for batch_idx, data in enumerate(loader_train):
             saver.global_step_increment()
@@ -144,5 +144,3 @@ def train(args, initial_global_step, model, optimizer, loss_func, loader_train, 
                 })
                 
                 model.train()
-
-                          

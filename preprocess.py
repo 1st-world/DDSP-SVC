@@ -34,17 +34,17 @@ def parse_args(args=None, namespace=None):
     
 def preprocess(path, f0_extractor, volume_extractor, mel_extractor, units_encoder, sample_rate, hop_size, device = 'cuda', use_pitch_aug = False, extensions = ['wav']):
     
-    path_srcdir  = os.path.join(path, 'audio')
-    path_unitsdir  = os.path.join(path, 'units')
-    path_f0dir  = os.path.join(path, 'f0')
-    path_volumedir  = os.path.join(path, 'volume')
-    path_augvoldir  = os.path.join(path, 'aug_vol')
-    path_meldir  = os.path.join(path, 'mel')
-    path_augmeldir  = os.path.join(path, 'aug_mel')
+    path_srcdir = os.path.join(path, 'audio')
+    path_unitsdir = os.path.join(path, 'units')
+    path_f0dir = os.path.join(path, 'f0')
+    path_volumedir = os.path.join(path, 'volume')
+    path_augvoldir = os.path.join(path, 'aug_vol')
+    path_meldir = os.path.join(path, 'mel')
+    path_augmeldir = os.path.join(path, 'aug_mel')
     path_skipdir = os.path.join(path, 'skip')
     
     # list files
-    filelist =  traverse_dir(
+    filelist = traverse_dir(
         path_srcdir,
         extensions=extensions,
         is_pure=True,
@@ -127,19 +127,20 @@ def preprocess(path, f0_extractor, volume_extractor, mel_extractor, units_encode
             print('This file has been moved to ' + path_skipfile)
     print('Preprocess the audio clips in :', path_srcdir)
     
-    # single process
+    # single-process
     for file in tqdm(filelist, total=len(filelist)):
         process(file)
     
     if mel_extractor is not None:
         path_pitchaugdict = os.path.join(path, 'pitch_aug_dict.npy')
         np.save(path_pitchaugdict, pitch_aug_dict)
-    # multi-process (have bugs)
+
+    # multi-process ((currently disabled due to bugs))
     '''
     with concurrent.futures.ProcessPoolExecutor(max_workers=2) as executor:
         list(tqdm(executor.map(process, filelist), total=len(filelist)))
     '''
-                
+
 if __name__ == '__main__':
     # parse commands
     cmd = parse_args()
@@ -152,7 +153,6 @@ if __name__ == '__main__':
     args = utils.load_config(cmd.config)
     sample_rate = args.data.sampling_rate
     hop_size = args.data.block_size
-    
     extensions = args.data.extensions
     
     # initialize f0 extractor
@@ -188,7 +188,7 @@ if __name__ == '__main__':
                         args.data.encoder_sample_rate, 
                         args.data.encoder_hop_size,
                         cnhubertsoft_gate=cnhubertsoft_gate,
-                        device = device)    
+                        device = device)
     
     # preprocess training set
     preprocess(args.data.train_path, f0_extractor, volume_extractor, mel_extractor, units_encoder, sample_rate, hop_size, device = device, use_pitch_aug = use_pitch_aug, extensions = extensions)

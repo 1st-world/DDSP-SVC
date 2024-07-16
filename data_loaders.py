@@ -17,7 +17,7 @@ def traverse_dir(
         is_pure=False,
         is_sort=False,
         is_ext=True):
-
+    
     file_list = []
     cnt = 0
     for root, _, files in os.walk(root_dir):
@@ -26,7 +26,7 @@ def traverse_dir(
                 # path
                 mix_path = os.path.join(root, file)
                 pure_path = mix_path[len(root_dir)+1:] if is_pure else mix_path
-
+                
                 # amount
                 if (amount is not None) and (cnt == amount):
                     if is_sort:
@@ -63,11 +63,11 @@ def get_data_loaders(args, whole_audio=False):
         fp16=args.train.cache_fp16,
         use_aug=True)
     loader_train = torch.utils.data.DataLoader(
-        data_train ,
+        data_train,
         batch_size=args.train.batch_size if not whole_audio else 1,
         shuffle=True,
         num_workers=args.train.num_workers if args.train.cache_device=='cpu' else 0,
-        persistent_workers=(args.train.num_workers > 0) if args.train.cache_device=='cpu' else False,
+        persistent_workers=(args.train.num_workers > 0) if (args.train.cache_device == 'cpu') else False,
         pin_memory=True if args.train.cache_device=='cpu' else False
     )
     data_valid = AudioDataset(
@@ -140,7 +140,7 @@ class AudioDataset(Dataset):
                 dirname_split = re.split(r"_|\-", os.path.dirname(name_ext), 2)[0]
                 spk_id = int(dirname_split) if str.isdigit(dirname_split) else 0
                 if spk_id < 1 or spk_id > n_spk:
-                    raise ValueError(' [x] Muiti-speaker traing error : spk_id must be a positive integer from 1 to n_spk ')
+                    raise ValueError(' [x] Muiti-speaker training error : spk_id must be a positive integer from 1 to n_spk ')
             else:
                 spk_id = 1
             spk_id = torch.LongTensor(np.array([spk_id])).to(device)
@@ -174,7 +174,7 @@ class AudioDataset(Dataset):
                         'volume': volume,
                         'spk_id': spk_id
                         }
-           
+    
 
     def __getitem__(self, file_idx):
         name_ext = self.paths[file_idx]
@@ -182,7 +182,7 @@ class AudioDataset(Dataset):
         # check duration. if too short, then skip
         if data_buffer['duration'] < (self.waveform_sec + 0.1):
             return self.__getitem__( (file_idx + 1) % len(self.paths))
-            
+        
         # get item
         return self.get_data(name_ext, data_buffer)
 
