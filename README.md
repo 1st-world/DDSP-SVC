@@ -130,8 +130,8 @@ Note: You need to load the version 5.0 model on the right hand side of the GUI.
 위 5.0 버전이 4.0 버전에 대해 완전한 상위 호환이므로 4.0 버전에 대한 안내는 별도로 제공하지 않습니다.  
 안내가 필요하다면 5.0 버전의 안내문에서 `diffusion-fast.yaml`을 `diffusion-new.yaml`로 대체하십시오.  
 
-참고: 캐스케이드 모델 훈련 시 fp16 훈련에 일시적인 문제가 있지만 fp32와 bf16은 정상적으로 작동합니다.
-Note: There is a temporary problem with fp16 training, but fp32 and bf16 are working normally.
+참고: 캐스케이드 모델 훈련 시 fp16 훈련에 일시적인 문제가 있지만 fp32와 bf16은 정상적으로 작동합니다.  
+Note: There is a temporary problem with fp16 training, but fp32 and bf16 are working normally.  
 
 참고: GUI 사용 시 우측에 버전 4.0 모델을 로드해야 합니다.  
 Note: You need to load the version 4.0 model on the right hand side of the GUI.
@@ -202,6 +202,8 @@ The program will automatically check whether the parameters of the DDSP model an
 ```bash
 python gui_diff.py
 ```
+
+---
 
 ## 0. 소개
 
