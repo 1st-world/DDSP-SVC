@@ -19,13 +19,13 @@ def parse_args(args=None, namespace=None):
     return parser.parse_args(args=args, namespace=namespace)
 
 
-if __name__ == '__main__':
-    # parse commands
-    cmd = parse_args()
-    
-    # load config
-    args = utils.load_config(cmd.config)
-    print(' > config:', cmd.config)
+def training(args = None):
+    if args is None:
+        # parse commands, load config
+        cmd = parse_args()
+        args = utils.load_config(cmd.config)
+        print(' > config:', cmd.config)
+        
     print(' >    exp:', args.env.expdir)
     
     # load vocoder
@@ -72,4 +72,7 @@ if __name__ == '__main__':
     
     # run
     train(args, initial_global_step, model, optimizer, scheduler, vocoder, loader_train, loader_valid)
-    
+
+
+if __name__ == '__main__':
+    training()

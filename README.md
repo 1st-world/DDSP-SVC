@@ -9,15 +9,16 @@
     - 다운로드 후 압축 해제한 폴더 내 bin 경로를 환경 변수 PATH에 추가
 2. CUDA 11.8 설치
     - [**Official Website**](https://developer.nvidia.com/cuda-11-8-0-download-archive)
-    - 시스템 재시작을 요구할 수 있음
+    - 시스템 재시작이 요구될 수 있음
 3. C++ Build Tools로 C++ 14 버전 설치
     - [**Official Website**](https://visualstudio.microsoft.com/ko/visual-cpp-build-tools/)
-    - 선택 항목 포함하여 설치
-        - C++를 사용한 데스크톱 개발 → MSVC, Windows 11 SDK, Windows용 C++ CMake 도구, C++ AddressSanitizer
+    - 다음 항목 포함하여 설치
+        - C++를 사용한 데스크톱 개발
+            - MSVC, Windows 11 SDK, Windows용 C++ CMake 도구, C++ AddressSanitizer
 4. 체크포인트 다운로드
     - **(필수)** [**ContentVec**](https://ibm.ent.box.com/s/z1wgl1stco8ffooyatzdwsqn2psd9lrr) 인코더를 다운로드 후 `pretrain/contentvec` 폴더 내에 삽입
         - (선택) [HubertSoft](https://github.com/bshall/hubert/releases/download/v0.1/hubert-soft-0d54a1f4.pt)를 ContentVec 대신 사용할 수 있으나, 이 경우 configs 조정 필요
-    - **(필수)** 사전 학습된 Vocoder를 사용하기 위해 [DiffSinger Community Vocoders Project](https://openvpi.github.io/vocoders)에서 Downloads 섹션의 link를 통해 nsf_hifigan_20221211.zip 다운로드 후 `pretrain/` 폴더 내에 압축 해제
+    - **(필수)** 사전 학습된 Vocoder를 사용하기 위해 [**DiffSinger Community Vocoders**](https://openvpi.github.io/vocoders)에서 Downloads 섹션의 link를 통해 nsf_hifigan_20221211.zip 다운로드 후 `pretrain/nsf_hifigan` 폴더 내에 압축 해제
 
 ## 1. 학습 환경 설정
 - Python 3.10 설치
@@ -41,20 +42,20 @@
     - 좌측 파일 목록에서 `notebook2.ipynb`를 열고, 본인의 조건에 따라 전처리부터 학습까지 진행
 
 ## 3. 결과 추론
-- `notebook2.ipynb` 중 `4. 결과물 추출`에서 기본 환경 요소 설정
+- `notebook2.ipynb` 중 `4. 결과물 추출`에서 기본 환경 요소 설정 **(필수)**
     ```
     # Values input Required
-    'diff_ckpt'         :   'exp/diffusion-test/diff_ckpt.pt',  # 모델 체크포인트 경로
+    'model_ckpt'        :   'exp/reflow-test/model_00000.pt',   # 모델 체크포인트 경로
     'input'             :   'data/train/audio/name_1234.wav',   # 원본 노래 파일 경로
     'output'            :   'output.wav',                       # 출력 파일 저장할 경로
     ```
-- 위 3가지 외에 다른 환경 설정(Optional)이 필요할 경우 `main_diff.py`의 요소별 help 참조   
+- 위 3가지 외에 다른 환경 설정(Optional)이 필요할 경우 `main_reflow.py`의 요소별 help 참조   
 
 ---
-Language: [简体中文](./cn_README.md) **한국어/English**
+Language: **한국어/English** [简体中文(outdated)](./README_CHN.md)
 
 Translated into Korean by JS Park on 2024-06-11.  
-Last modified by JS Park on 2024-07-13.  
+Last modified by JS Park on 2024-07-18.  
 
 # DDSP-SVC
 
@@ -110,8 +111,8 @@ python train_diff.py -c configs/diffusion-fast.yaml
 python main_diff.py -i <input.wav> -diff <diff_ckpt.pt> -o <output.wav> -k <keychange (semitones)> -id <speaker_id> -speedup <speedup> -method <method> -kstep <kstep>
 ```
 
-5.0 버전 모델에는 DDSP 모델이 내장되어 있으므로 `-ddsp`를 사용하여 외부 DDSP 모델을 지정할 필요가 없습니다. 다른 옵션은 3.0 버전 모델과 같은 의미지만, 'kstep'은 구성 파일에서의 `k_step_max`보다 작거나 같아야 하므로 동일하게 유지하는 것이 좋습니다(기본값은 100).  
-The 5.0 version model has a built-in DDSP model, so specifying an external DDSP model using `-ddsp` is unnecessary. The other options have the same meaning as the 3.0 version model, but 'kstep' needs to be less than or equal to `k_step_max` in the configuration file, it is recommended to keep it equal (the default is 100)
+5.0 및 4.0 버전 모델에는 DDSP 모델이 내장되어 있으므로 `-ddsp`를 사용하여 외부 DDSP 모델을 지정할 필요가 없습니다. 다른 옵션은 3.0 버전 모델과 같은 의미지만, 'kstep'은 구성 파일에서의 `k_step_max`보다 작거나 같아야 하므로 동일하게 유지하는 것이 좋습니다(기본값은 100).  
+The 5.0 version model has a built-in DDSP model, so specifying an external DDSP model using `-ddsp` is unnecessary. The other options have the same meaning as the 3.0 version model, but 'kstep' needs to be less than or equal to `k_step_max` in the configuration file, it is recommended to keep it equal (the default is 100).
 
 (4) 실시간 GUI(Real-time GUI):
 
@@ -119,7 +120,7 @@ The 5.0 version model has a built-in DDSP model, so specifying an external DDSP 
 python gui_diff.py
 ```
 
-참고: GUI 우측에 버전 5.0 모델을 로드해야 합니다.  
+참고: GUI 사용 시 우측에 버전 5.0 모델을 로드해야 합니다.  
 Note: You need to load the version 5.0 model on the right hand side of the GUI.
 
 ## (4.0 - 업데이트) 새로운 DDSP 캐스케이드 확산 모델
@@ -127,9 +128,12 @@ Note: You need to load the version 5.0 model on the right hand side of the GUI.
 사전 학습된 모델은 여기에서 제공합니다: <https://huggingface.co/datasets/ms903/DDSP-SVC-4.0/resolve/main/pre-trained-model/model_0.pt> ('contentvec768l12' 인코더 사용)
 
 위 5.0 버전이 4.0 버전에 대해 완전한 상위 호환이므로 4.0 버전에 대한 안내는 별도로 제공하지 않습니다.  
-4.0 버전을 사용하고자 한다면 5.0 버전의 안내를 참고하되, `diffusion-fast.yaml`을 `diffusion-new.yaml`로 대체하십시오.  
+안내가 필요하다면 5.0 버전의 안내문에서 `diffusion-fast.yaml`을 `diffusion-new.yaml`로 대체하십시오.  
 
-참고: GUI 우측에 버전 4.0 모델을 로드해야 합니다.  
+참고: 캐스케이드 모델 훈련 시 fp16 훈련에 일시적인 문제가 있지만 fp32와 bf16은 정상적으로 작동합니다.
+Note: There is a temporary problem with fp16 training, but fp32 and bf16 are working normally.
+
+참고: GUI 사용 시 우측에 버전 4.0 모델을 로드해야 합니다.  
 Note: You need to load the version 4.0 model on the right hand side of the GUI.
 
 ## (3.0 - 업데이트) 얕은 확산 모델(DDSP + Diff-SVC refactor 버전)

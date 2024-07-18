@@ -1,7 +1,6 @@
 import os
 import argparse
 import torch
-
 from logger import utils
 from data_loaders import get_data_loaders
 from solver import train
@@ -21,13 +20,13 @@ def parse_args(args=None, namespace=None):
     return parser.parse_args(args=args, namespace=namespace)
 
 
-if __name__ == '__main__':
-    # parse commands
-    cmd = parse_args()
+def training(args = None):
+    if args is None:
+        # parse commands, load config
+        cmd = parse_args()
+        args = utils.load_config(cmd.config)
+        print(' > config:', cmd.config)
     
-    # load config
-    args = utils.load_config(cmd.config)
-    print(' > config:', cmd.config)
     print(' >    exp:', args.env.expdir)
 
     # load model
@@ -98,4 +97,7 @@ if __name__ == '__main__':
     
     # run
     train(args, initial_global_step, model, optimizer, loss_func, loader_train, loader_valid)
-    
+
+
+if __name__ == '__main__':
+    training()

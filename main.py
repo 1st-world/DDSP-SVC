@@ -22,7 +22,7 @@ def parse_args(args=None, namespace=None):
         "--model_path",
         type=str,
         required=True,
-        help="path to the model file",
+        help="Path to the model file",
     )
     parser.add_argument(
         "-d",
@@ -30,20 +30,20 @@ def parse_args(args=None, namespace=None):
         type=str,
         default=None,
         required=False,
-        help="cpu or cuda, auto if not set")
+        help="'cpu' or 'cuda', auto if not set")
     parser.add_argument(
         "-i",
         "--input",
         type=str,
         required=True,
-        help="path to the input audio file",
+        help="Path to the input audio file",
     )
     parser.add_argument(
         "-o",
         "--output",
         type=str,
         required=True,
-        help="path to the output audio file",
+        help="Path to the output audio file",
     )
     parser.add_argument(
         "-id",
@@ -51,7 +51,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=1,
-        help="speaker id (for multi-speaker model) | default: 1",
+        help="Speaker id (for multi-speaker model) | Default: 1",
     )
     parser.add_argument(
         "-mix",
@@ -59,7 +59,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default="None",
-        help="mix-speaker dictionary (for multi-speaker model) | default: None",
+        help="Mix-speaker dictionary (for multi-speaker model) | Default: None",
     )
     parser.add_argument(
         "-k",
@@ -67,7 +67,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=0,
-        help="key changed (number of semitones) | default: 0",
+        help="Key changed (number of semitones) | Default: 0",
     )
     parser.add_argument(
         "-e",
@@ -75,7 +75,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default='true',
-        help="true or false | default: true",
+        help="'true' or 'false' | Default: true",
     )
     parser.add_argument(
         "-pe",
@@ -83,7 +83,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default='rmvpe',
-        help="pitch extrator type: parselmouth, dio, harvest, crepe, fcpe, rmvpe (default)",
+        help="Pitch extrator type: parselmouth, dio, harvest, crepe, fcpe, rmvpe | Default: rmvpe",
     )
     parser.add_argument(
         "-fmin",
@@ -91,7 +91,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=50,
-        help="min f0 (Hz) | default: 50",
+        help="Min f0 (Hz) | Default: 50",
     )
     parser.add_argument(
         "-fmax",
@@ -99,7 +99,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=1100,
-        help="max f0 (Hz) | default: 1100",
+        help="Max f0 (Hz) | Default: 1100",
     )
     parser.add_argument(
         "-th",
@@ -107,7 +107,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=-60,
-        help="response threhold (dB) | default: -60",
+        help="Response threhold (dB) | Default: -60",
     )
     parser.add_argument(
         "-eak",
@@ -115,7 +115,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=0,
-        help="adapt the enhancer to a higher vocal range (number of semitones) | default: 0",
+        help="Adapt the enhancer to a higher vocal range (number of semitones) | Default: 0",
     )
     return parser.parse_args(args=args, namespace=namespace)
 
@@ -149,11 +149,12 @@ def cross_fade(a: np.ndarray, b: np.ndarray, idx: int):
     return result
 
 
-if __name__ == '__main__':
-    # parse commands
-    cmd = parse_args()
+def inference(cmd = None):
+    if cmd is None:
+        # parse commands
+        cmd = parse_args()
 
-    #device = 'cpu' 
+    # device = 'cpu'
     device = cmd.device
     if device is None:
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -279,4 +280,6 @@ if __name__ == '__main__':
                 result = cross_fade(result, seg_output, current_length + silent_length)
             current_length = current_length + silent_length + len(seg_output)
         sf.write(cmd.output, result, output_sample_rate)
-    
+
+if __name__ == '__main__':
+    inference()
