@@ -96,15 +96,15 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
     saver = Saver(args, initial_global_step=initial_global_step)
 
     # model size
-    params_count = utils.get_network_paras_amount({'model': model})
-    saver.log_info('--- model size ---')
+    params_count = utils.get_network_paras_amount({'Model': model})
+    saver.log_info('----- Model Size -----')
     saver.log_info(params_count)
     
     # run
     num_batches = len(loader_train)
     start_epoch = initial_global_step // num_batches
     model.train()
-    saver.log_info('======= start training =======')
+    saver.log_info('========== START Training ==========')
     scaler = GradScaler()
     if args.train.amp_dtype == 'fp32':
         dtype = torch.float32

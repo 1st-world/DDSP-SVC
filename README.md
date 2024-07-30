@@ -1,21 +1,23 @@
 # DDSP-SVC 사용자 매뉴얼
+본 매뉴얼은 Windows 환경 기준으로 설명하고 있으므로 Linux 등 다른 환경에서는 약간의 차이가 있을 수 있습니다.  
+
 **면책 조항 :** 본 문서와 프로젝트는 오로지 학습 교류 목적으로만 작성되었습니다.  
 합법적으로 획득한 데이터로만 모델을 훈련하고, 모델과 합성한 오디오를 불법적인 목적으로 사용하지 마십시오.  
 본 프로젝트의 모델을 사용하여 발생할 수 있는 저작권 등의 문제에 대해서 책임을 지지 않습니다.  
 
 ## 0. 프로그램 설치 및 체크포인트 다운로드
-1. FFmpeg 설치
+- FFmpeg 설치
     - [**Official Website**](https://ffmpeg.org/download.html)
     - 다운로드 후 압축 해제한 폴더 내 bin 경로를 환경 변수 PATH에 추가
-2. CUDA 11.8 설치
+- CUDA 11.8 설치
     - [**Official Website**](https://developer.nvidia.com/cuda-11-8-0-download-archive)
     - 시스템 재시작이 요구될 수 있음
-3. C++ Build Tools로 C++ 14 버전 설치
+- C++ Build Tools로 C++ 14 버전 설치
     - [**Official Website**](https://visualstudio.microsoft.com/ko/visual-cpp-build-tools/)
     - 다음 항목 포함하여 설치
         - C++를 사용한 데스크톱 개발
             - MSVC, Windows 11 SDK, Windows용 C++ CMake 도구, C++ AddressSanitizer
-4. 체크포인트 다운로드
+- 체크포인트 다운로드
     - **(필수)** [**ContentVec**](https://ibm.ent.box.com/s/z1wgl1stco8ffooyatzdwsqn2psd9lrr) 인코더를 다운로드 후 `pretrain/contentvec` 폴더 내에 삽입
         - (선택) [HubertSoft](https://github.com/bshall/hubert/releases/download/v0.1/hubert-soft-0d54a1f4.pt)를 ContentVec 대신 사용할 수 있으나, 이 경우 configs 조정 필요
     - **(필수)** 사전 학습된 Vocoder를 사용하기 위해 [**DiffSinger Community Vocoders**](https://openvpi.github.io/vocoders)에서 Downloads 섹션의 link를 통해 nsf_hifigan_20221211.zip 다운로드 후 `pretrain/nsf_hifigan` 폴더 내에 압축 해제
@@ -37,25 +39,25 @@
     - 기본 GUI는 중국어만 지원하는 관계로, 한국어로 새롭게 작성한 직관적인 Jupyter Notebook
 - Jupyter Lab 실행 방법
     - 프롬프트에 `jupyter-lab`을 입력하면 브라우저 자동 실행
-    - 만약 열리지 않으면 브라우저를 켜고 `localhost:8888/lab`으로 이동
-    - Visual Studio Code 등 ipynb를 지원하는 편집기에서도 실행 가능
+        - 만약 열리지 않으면 브라우저를 켜고 `localhost:8888/lab`으로 이동
+    - Visual Studio Code 등 Jupyter Notebook을 지원하는 편집기에서도 실행 가능
     - 좌측 파일 목록에서 `notebook2.ipynb`를 열고, 본인의 조건에 따라 전처리부터 학습까지 진행
 
 ## 3. 결과 추론
 - `notebook2.ipynb` 중 `4. 결과물 추출`에서 기본 환경 요소 설정 **(필수)**
     ```
     # Values input Required
-    'model_ckpt'        :   'exp/reflow-test/model_00000.pt',   # 모델 체크포인트 경로
-    'input'             :   'data/train/audio/name_1234.wav',   # 원본 노래 파일 경로
-    'output'            :   'output.wav',                       # 출력 파일 저장할 경로
+    'model_ckpt'        :   'exp/diffusion-test/model_00000.pt',    # 모델 체크포인트 경로
+    'input'             :   'input.wav',                            # 원본 노래 파일 경로
+    'output'            :   'output.wav',                           # 출력 파일 저장할 경로
     ```
-- 위 3가지 외에 다른 환경 설정(Optional)이 필요할 경우 `main_reflow.py`의 요소별 help 참조   
+- 위 3가지 외에 다른 환경 설정(Optional)이 필요할 경우 `main_diff.py`의 요소별 help 참조   
 
 ---
 Language: **한국어/English** [简体中文(outdated)](./README_CHN.md)
 
 Translated into Korean by JS Park on 2024-06-11.  
-Last modified by JS Park on 2024-07-18.  
+Last modified by JS Park on 2024-07-30.  
 
 # DDSP-SVC
 
@@ -87,8 +89,7 @@ python main_reflow.py -i <input.wav> -m <model_ckpt.pt> -o <output.wav> -k <keyc
 종속성 설치, 데이터 준비, 사전 훈련된 인코더(hubert 또는 contentvec), 피치 추출기(RMVPE) 및 보코더(nsf-hifigan) 구성은 순수 DDSP 모델을 훈련하는 것과 동일합니다(아래 섹션 참조).  
 Installing dependencies, data preparation, configuring the pre-trained encoder (hubert or contentvec), pitch extractor (RMVPE) and vocoder (nsf-hifigan) are the same as training a pure DDSP model (See section below).
 
-릴리즈 페이지에서 사전 학습된 모델을 제공합니다.  
-We provide a pre-trained model in the release page.
+먼저 [**사전 학습된 모델 다운로드**](https://github.com/yxlllc/DDSP-SVC/releases/download/5.0/model_0.pt) 링크를 통해 해당 버전에 적합한 `model_0.pt`를 받으세요.
 
 `diffusion-fast.yaml`의 'expdir' 매개변수로 지정된 모델 내보내기 폴더로 `model_0.pt`를 이동하면, 해당 폴더에 사전 훈련된 모델을 프로그램이 자동으로 불러올 것입니다.  
 Move the `model_0.pt` to the model export folder specified by the 'expdir' parameter in `diffusion-fast.yaml`, and the program will automatically load the pre-trained model in that folder.
@@ -125,7 +126,7 @@ Note: You need to load the version 5.0 model on the right hand side of the GUI.
 
 ## (4.0 - 업데이트) 새로운 DDSP 캐스케이드 확산 모델
 
-사전 학습된 모델은 여기에서 제공합니다: <https://huggingface.co/datasets/ms903/DDSP-SVC-4.0/resolve/main/pre-trained-model/model_0.pt> ('contentvec768l12' 인코더 사용)
+[**사전 학습된 모델 다운로드**](https://huggingface.co/datasets/ms903/DDSP-SVC-4.0/resolve/main/pre-trained-model/model_0.pt) ('contentvec768l12' 인코더 사용)
 
 위 5.0 버전이 4.0 버전에 대해 완전한 상위 호환이므로 4.0 버전에 대한 안내는 별도로 제공하지 않습니다.  
 안내가 필요하다면 5.0 버전의 안내문에서 `diffusion-fast.yaml`을 `diffusion-new.yaml`로 대체하십시오.  
@@ -434,6 +435,6 @@ Update: A splicing algorithm based on a phase vocoder is now added, but in most 
 
 ## 8. 원글
 
-- yxlllc/DDSP-SVC[https://github.com/yxlllc/DDSP-SVC]
-- wlsdml1114/DDSP-SVC-KOR[https://github.com/wlsdml1114/DDSP-SVC-KOR]
+- [**yxlllc/DDSP-SVC**](https://github.com/yxlllc/DDSP-SVC)
+- [**wlsdml1114/DDSP-SVC-KOR**](https://github.com/wlsdml1114/DDSP-SVC-KOR)
     - forked from yxlllc/DDSP-SVC (outdated version)

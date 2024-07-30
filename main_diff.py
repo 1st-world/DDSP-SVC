@@ -16,13 +16,13 @@ from tqdm import tqdm
 
 def check_args(ddsp_args, diff_args):
     if ddsp_args.data.sampling_rate != diff_args.data.sampling_rate:
-        print("Unmatch data.sampling_rate!")
+        print("Unmatch `data.sampling_rate`!")
         return False
     if ddsp_args.data.block_size != diff_args.data.block_size:
-        print("Unmatch data.block_size!")
+        print("Unmatch `data.block_size`!")
         return False
     if ddsp_args.data.encoder != diff_args.data.encoder:
-        print("Unmatch data.encoder!")
+        print("Unmatch `data.encoder`!")
         return False
     return True
     
@@ -34,7 +34,7 @@ def parse_args(args=None, namespace=None):
         "--diff_ckpt",
         type=str,
         required=True,
-        help="path to the diffusion model checkpoint",
+        help="Path to the diffusion model checkpoint",
     )
     parser.add_argument(
         "-ddsp",
@@ -42,7 +42,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=None,
-        help="path to the DDSP model checkpoint (for shallow diffusion)",
+        help="Path to the DDSP model checkpoint (for shallow diffusion)",
     )
     parser.add_argument(
         "-d",
@@ -50,20 +50,20 @@ def parse_args(args=None, namespace=None):
         type=str,
         default=None,
         required=False,
-        help="cpu or cuda, auto if not set")
+        help="'cpu' or 'cuda', auto if not set")
     parser.add_argument(
         "-i",
         "--input",
         type=str,
         required=True,
-        help="path to the input audio file",
+        help="Path to the input audio file",
     )
     parser.add_argument(
         "-o",
         "--output",
         type=str,
         required=True,
-        help="path to the output audio file",
+        help="Path to the output audio file",
     )
     parser.add_argument(
         "-id",
@@ -71,15 +71,15 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=1,
-        help="speaker id (for multi-speaker model) | default: 1",
+        help="Speaker id (for multi-speaker model) | Default: 1",
     )
     parser.add_argument(
         "-mix",
         "--spk_mix_dict",
         type=str,
         required=False,
-        default="None",
-        help="mix-speaker dictionary (for multi-speaker model) | default: None",
+        default='None',
+        help="Mix-speaker dictionary (for multi-speaker model) | Default: None",
     )
     parser.add_argument(
         "-k",
@@ -87,7 +87,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=0,
-        help="key changed (number of semitones) | default: 0",
+        help="Key changed (number of semitones) | Default: 0",
     )
     parser.add_argument(
         "-f",
@@ -95,7 +95,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=0,
-        help="formant changed (number of semitones) , only for pitch-augmented model| default: 0",
+        help="Formant changed (number of semitones), only for pitch-augmented model | Default: 0",
     )
     parser.add_argument(
         "-pe",
@@ -103,7 +103,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default='rmvpe',
-        help="pitch extrator type: parselmouth, dio, harvest, crepe, fcpe, rmvpe (default)",
+        help="Pitch extractor type: parselmouth, dio, harvest, crepe, fcpe, rmvpe | Default: rmvpe",
     )
     parser.add_argument(
         "-fmin",
@@ -111,7 +111,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=50,
-        help="min f0 (Hz) | default: 50",
+        help="Min f0 (Hz) | Default: 50",
     )
     parser.add_argument(
         "-fmax",
@@ -119,7 +119,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=1100,
-        help="max f0 (Hz) | default: 1100",
+        help="Max f0 (Hz) | Default: 1100",
     )
     parser.add_argument(
         "-th",
@@ -127,7 +127,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=-60,
-        help="response threhold (dB) | default: -60",
+        help="Response threhold (dB) | Default: -60",
     )
     parser.add_argument(
         "-diffid",
@@ -135,7 +135,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default='auto',
-        help="diffusion speaker id (for multi-speaker model) | default: auto",
+        help="Diffusion speaker id (for multi-speaker model) | Default: auto",
     )
     parser.add_argument(
         "-speedup",
@@ -143,7 +143,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default='auto',
-        help="speed up | default: auto",
+        help="Speed up | Default: auto",
     )
     parser.add_argument(
         "-method",
@@ -151,7 +151,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default='auto',
-        help="ddim, pndm, dpm-solver or unipc | default: auto",
+        help="'ddim', 'pndm', 'dpm-solver' or 'unipc' | Default: auto",
     )
     parser.add_argument(
         "-kstep",
@@ -159,7 +159,7 @@ def parse_args(args=None, namespace=None):
         type=str,
         required=False,
         default=None,
-        help="shallow diffusion steps | default: None",
+        help="Shallow diffusion steps | Default: None",
     )
     return parser.parse_args(args=args, namespace=namespace)
 
@@ -193,11 +193,12 @@ def cross_fade(a: np.ndarray, b: np.ndarray, idx: int):
     return result
 
 
-if __name__ == '__main__':
-    # parse commands
-    cmd = parse_args()
+def inference(cmd = None):
+    if cmd is None:
+        # parse commands
+        cmd = parse_args()
     
-    #device = 'cpu' 
+    # device = 'cpu' 
     device = cmd.device
     if device is None:
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -250,7 +251,7 @@ if __name__ == '__main__':
     # formant change
     formant_shift_key = torch.from_numpy(np.array([[float(cmd.formant_shift_key)]])).float().to(device)
     
-    # extract volume 
+    # extract volume
     print('Extracting the volume envelope of the input audio...')
     volume_extractor = Volume_Extractor(hop_size)
     volume = volume_extractor.extract(audio)
@@ -350,7 +351,7 @@ if __name__ == '__main__':
             start_frame = segment[0]
             seg_input = torch.from_numpy(segment[1]).float().unsqueeze(0).to(device)
             seg_units = units_encoder.encode(seg_input, sample_rate, hop_size)
-           
+            
             seg_f0 = f0[:, start_frame : start_frame + seg_units.size(1), :]
             seg_volume = volume[:, start_frame : start_frame + seg_units.size(1), :]
             if ddsp is not None:
@@ -361,18 +362,18 @@ if __name__ == '__main__':
                 seg_input_mel = input_mel[:, start_frame : start_frame + seg_units.size(1), :]
             else:
                 seg_input_mel = None
-                
+            
             seg_mel = model(
-                    seg_units, 
-                    seg_f0, 
-                    seg_volume, 
-                    spk_id = diff_spk_id, 
+                    seg_units,
+                    seg_f0,
+                    seg_volume,
+                    spk_id = diff_spk_id,
                     spk_mix_dict = spk_mix_dict,
                     aug_shift = formant_shift_key,
                     vocoder=vocoder,
                     gt_spec=seg_input_mel,
-                    infer=True, 
-                    infer_speedup=infer_speedup, 
+                    infer=True,
+                    infer_speedup=infer_speedup,
                     method=method,
                     k_step=k_step)
             seg_output = vocoder.infer(seg_mel, seg_f0)
@@ -387,4 +388,6 @@ if __name__ == '__main__':
                 result = cross_fade(result, seg_output, current_length + silent_length)
             current_length = current_length + silent_length + len(seg_output)
         sf.write(cmd.output, result, args.data.sampling_rate)
-    
+
+if __name__ == '__main__':
+    inference()

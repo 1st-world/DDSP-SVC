@@ -133,7 +133,7 @@ class AudioDataset(Dataset):
             path_f0 = os.path.join(self.path_root, 'f0', name_ext) + '.npy'
             f0 = np.load(path_f0)
             f0 = torch.from_numpy(f0).float().unsqueeze(-1).to(device)
-                
+            
             path_volume = os.path.join(self.path_root, 'volume', name_ext) + '.npy'
             volume = np.load(path_volume)
             volume = torch.from_numpy(volume).float().unsqueeze(-1).to(device)
@@ -141,12 +141,12 @@ class AudioDataset(Dataset):
             path_augvol = os.path.join(self.path_root, 'aug_vol', name_ext) + '.npy'
             aug_vol = np.load(path_augvol)
             aug_vol = torch.from_numpy(aug_vol).float().unsqueeze(-1).to(device)
-                        
+            
             if n_spk is not None and n_spk > 1:
                 dirname_split = re.split(r"_|\-", os.path.dirname(name_ext), 2)[0]
                 spk_id = int(dirname_split) if str.isdigit(dirname_split) else 0
                 if spk_id < 1 or spk_id > n_spk:
-                    raise ValueError(' [x] Muiti-speaker traing error : spk_id must be a positive integer from 1 to n_spk ')
+                    raise ValueError(' [x] Multi-speaker training error : spk_id must be a positive integer from 1 to n_spk ')
             else:
                 spk_id = 1
             spk_id = torch.LongTensor(np.array([spk_id])).to(device)
