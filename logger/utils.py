@@ -1,7 +1,6 @@
 import os
 import yaml
 import json
-import pickle
 import torch
 
 def traverse_dir(
@@ -21,7 +20,13 @@ def traverse_dir(
             if any([file.endswith(f".{ext}") for ext in extensions]):
                 # path
                 mix_path = os.path.join(root, file)
-                pure_path = mix_path[len(root_dir)+1:] if is_pure else mix_path
+                if is_pure:
+                    if mix_path.startswith(root_dir):
+                        pure_path = mix_path[len(root_dir) + (1 if mix_path[len(root_dir):][0] in ['/', '\\'] else 0):]
+                    else:
+                        pure_path = mix_path
+                else:
+                    pure_path = mix_path
 
                 # amount
                 if (amount is not None) and (cnt == amount):
