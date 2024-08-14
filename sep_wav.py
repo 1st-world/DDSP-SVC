@@ -9,12 +9,10 @@ import soundfile
 from pydub import AudioSegment, effects
 import torch
 import torchaudio
-from torchaudio.utils import download_asset
 from torchaudio.pipelines import HDEMUCS_HIGH_MUSDB_PLUS
 from torchaudio.transforms import Fade
-from logger.utils import traverse_dir
 
-temp_log_path = "temp_ffmpeg_log.txt"  # ffmpeg의 무음 감지 로그의 임시 저장 위치
+temp_log_path = "temp_ffmpeg_log.txt"  # Temporary path for silence detection logs
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -26,15 +24,11 @@ def extract_voice(
         device=None,
         sample_rate=None
 ):
-    """
-    Apply model to a given mixture.
-
+    """ Apply model to a given mixture.
     Args:
-        segment (int): segment length in seconds
-        device (torch.device, str, or None): if provided, device on which to
-            execute the computation, otherwise `mix.device` is assumed.
-            When `device` is different from `mix.device`, only local computations will
-            be on `device`, while the entire tracks will be stored on `mix.device`.
+        segment (int): Segment length in seconds
+        device (torch.device, str, or None): If provided, device on which to execute the computation, otherwise `mix.device` is assumed.
+            When `device` is different from `mix.device`, only local computations will be on `device`, while the entire tracks will be stored on `mix.device`.
     """
 
     if device is None:
@@ -72,42 +66,31 @@ def extract_voice(
     return final
 
 
-
-def mp4_to_wav(input_dir:str, input_file: str):
-    """mp4파일을 wav형식으로 변환합니다.
-
-    Args:
-        input_dir (str) : 입력 mp4파일의 path
-        input_file (str) : 입력 mp4파일의 이름
-    """
+def mp4_to_wav(input_dir: str, input_file: str):
+    # Convert mp4 files to wav format
 
     ext = os.path.splitext(input_file)[1][1:]
 
     if ext != "mp4":
         return 
-    else :
-        track = AudioSegment.from_file(os.path.join(input_dir,input_file),  format= 'mp4')
-        track.export(os.path.join(input_dir,os.path.splitext(input_file)[0]+".wav"), format='wav')
+    else:
+        track = AudioSegment.from_file(os.path.join(input_dir, input_file),  format='mp4')
+        track.export(os.path.join(input_dir, os.path.splitext(input_file)[0]+".wav"), format='wav')
 
 
 def audio_norm(input_filepath: str, output_filepath: str, sample_rate = 44100, use_preprocessing = True):
-    """오디오 파일에 노멀라이징 효과를 적용합니다.
-
-    Args:
-        input_filepath (str): 입력 파일의 경로
-        output_filepath (str): 효과가 적용된 오디오 파일의 출력 경로
-    """
+    # Apply normalization to audio files
 
     ext = os.path.splitext(input_filepath)[1][1:]
 
-    assert ext in ["wav", "flac"], "지원하지 않는 포멧입니다."
+    assert ext in ["wav", "flac"], "This format is not supported."
 
     rawsound = AudioSegment.from_file(input_filepath, format=ext)
 
-    # change sample rate
+    # Change sample rate
     rawsound = rawsound.set_frame_rate(sample_rate)
 
-    # change channels
+    # Change channels
     if rawsound.channels != 1 :
         rawsound = rawsound.set_channels(1)
 
@@ -116,13 +99,11 @@ def audio_norm(input_filepath: str, output_filepath: str, sample_rate = 44100, u
 
 
 def get_ffmpeg_args(filepath: str) -> str:
-    """ffmpeg의 명령줄을 생성합니다.
-
+    """ Generate a command line for ffmpeg.
     Args:
-        filepath (str): 파일 경로
-
+        filepath (str)
     Returns:
-        str: ffmpeg 인자값이 포함된 명령줄
+        str: Command line with ffmpeg argument values
     """
 
     global temp_log_path
@@ -131,13 +112,11 @@ def get_ffmpeg_args(filepath: str) -> str:
 
 
 def get_audiofiles(path: str) -> List[str]:
-    """해당 폴더 내부의 모든 오디오 파일을 가져옵니다. (flac, wav만 지원)
-
+    """ All audio files inside that folder will be imported. (Only wav and flac formats are supported)
     Args:
-        path (str): 폴더 위치
-
+        path (str): Path to folder
     Returns:
-        List[str]: 오디오 파일의 경로
+        List[str]: Path to audio file
     """
 
     filepaths = glob(os.path.join(path, "**", "*.flac"), recursive=True)
@@ -150,19 +129,18 @@ def get_audiofiles(path: str) -> List[str]:
     return filepaths
 
 
-def main(input_dir: str, output_dir: str, split_sil: bool = False, use_preprocessing: bool=True, use_norm: bool = True, use_extract: bool = True) -> None:
-    """메인 로직
-
+def main(input_dir: str, output_dir: str, split_sil: bool=False, use_preprocessing: bool=True, use_norm: bool=True, use_extract: bool=True) -> None:
+    """ Main
     Args:
-        input_dir (str): 오디오 파일의 원본 위치 (폴더)
-        output_dir (str): 처리가 완료된 오디오 파일의 출력 위치 (최종본은 final 폴더에 저장됨)
-        split_sil (bool, optional): 오디오 파일에서 부분적인 무음을 잘라냅니다. Defaults to False.
-        use_norm (bool, optional): 오디오 노멀라이징을 적용합니다. Defaults to True.
-        use_extract (bool, optional): 노래가 섞인 오디오에서 목소리만 추출합니다. Defaults to True
+        input_dir (str): Source path for audio files
+        output_dir (str): Output path for audio files that have completed processing (The final version is saved in the "final" folder.)
+        split_sil (bool, optional): Cut out partial silence from audio files. Default is False
+        use_norm (bool, optional): Apply audio normalization. Default is True
+        use_extract (bool, optional): Extract only voices from audio mixed with singing. Default is True
     """
 
-    for filename in tqdm(os.listdir(input_dir), desc="mp4 to wav 변환 작업 중..."):
-        mp4_to_wav(input_dir,filename)
+    for filename in tqdm(os.listdir(input_dir), desc="Converting mp4 to wav... "):
+        mp4_to_wav(input_dir, filename)
 
     filepaths = get_audiofiles(input_dir)
 
@@ -173,14 +151,14 @@ def main(input_dir: str, output_dir: str, split_sil: bool = False, use_preproces
         output_norm_dir = os.path.join(output_dir, "norm")
         os.makedirs(output_norm_dir, exist_ok=True)
 
-        for filepath in tqdm(filepaths, desc="노멀라이징 작업 중..."):
+        for filepath in tqdm(filepaths, desc="Normalizing... "):
             filename = os.path.splitext(os.path.basename(filepath))[0]
             out_filepath = os.path.join(output_norm_dir, filename) + ".wav"
             audio_norm(filepath, out_filepath, use_preprocessing)
 
         filepaths = get_audiofiles(output_norm_dir)
 
-    for filepath in tqdm(filepaths, desc="음원 자르는 중..."):
+    for filepath in tqdm(filepaths, desc="Cutting... "):
         duration = librosa.get_duration(filename=filepath)
         max_last_seg_duration = 0
         sep_duration_final = 15
@@ -209,11 +187,11 @@ def main(input_dir: str, output_dir: str, split_sil: bool = False, use_preproces
         sample_rate = bundle.sample_rate
         print(f"Sample rate: {sample_rate}")
 
-        for filepath in tqdm(filepaths, desc="목소리 추출 중..."):
+        for filepath in tqdm(filepaths, desc="Extracting vocals... "):
             if os.path.exists(temp_log_path):
                 os.remove(temp_log_path)
 
-            waveform, sample_rate = torchaudio.load(filepath)  # replace SAMPLE_SONG with desired path for different song
+            waveform, sample_rate = torchaudio.load(filepath)  # Replace SAMPLE_SONG with desired path for different song
             waveform.to(device)
 
             # parameters
@@ -237,7 +215,7 @@ def main(input_dir: str, output_dir: str, split_sil: bool = False, use_preproces
             filename = os.path.splitext(os.path.basename(filepath))[0]
             out_filepath = os.path.join(output_voice_dir, f"{filename}.wav")
 
-            torchaudio.save(out_filepath, audios["vocals"].cpu(), sample_rate) # audios has drums, bass, vocals, others, but we need only vocals
+            torchaudio.save(out_filepath, audios["vocals"].cpu(), sample_rate)  # The audio has drums, bass, vocals, etc., but we only need the vocals.
 
             if use_preprocessing:
                 rawsound = AudioSegment.from_file(out_filepath, format='wav')
@@ -246,7 +224,7 @@ def main(input_dir: str, output_dir: str, split_sil: bool = False, use_preproces
 
         filepaths = get_audiofiles(output_voice_dir)
 
-    for filepath in tqdm(filepaths, desc="무음 제거 중..."):
+    for filepath in tqdm(filepaths, desc="Removing silence... "):
         if os.path.exists(temp_log_path):
             os.remove(temp_log_path)
 
@@ -280,6 +258,7 @@ def main(input_dir: str, output_dir: str, split_sil: bool = False, use_preproces
     if os.path.exists(temp_log_path):
         os.remove(temp_log_path)
 
+
 def demucs(input_path, output_path):
     bundle = HDEMUCS_HIGH_MUSDB_PLUS
     model = bundle.get_model()
@@ -287,13 +266,13 @@ def demucs(input_path, output_path):
     sample_rate = bundle.sample_rate
     print(f"Sample rate: {sample_rate}")
 
-    filepaths =  glob(input_path+"*.wav")
+    filepaths = glob(input_path+"*.wav")
 
-    for filepath in tqdm(filepaths, desc="목소리 추출 중..."):
+    for filepath in tqdm(filepaths, desc="Extracting vocals... "):
         if os.path.exists(temp_log_path):
             os.remove(temp_log_path)
 
-        waveform, sample_rate = torchaudio.load(filepath)  # replace SAMPLE_SONG with desired path for different song
+        waveform, sample_rate = torchaudio.load(filepath)  # Replace SAMPLE_SONG with desired path for different song
 
         # Check number of channels
         num_channels = waveform.shape[0]
@@ -325,18 +304,21 @@ def demucs(input_path, output_path):
         filename = os.path.splitext(os.path.basename(filepath))[0]
         out_filepath = os.path.join(output_path, f"{filename}.wav")
 
-        torchaudio.save(out_filepath, audios["vocals"].cpu(), sample_rate) # audios has drums, bass, vocals, others, but we need only vocals
+        torchaudio.save(out_filepath, audios["vocals"].cpu(), sample_rate)  # The audio has drums, bass, vocals, etc., but we only need the vocals.
 
-        # if use_preprocessing:
-        #     rawsound = AudioSegment.from_file(out_filepath, format='wav')
-        #     rawsound = rawsound.set_channels(1)
-        #     rawsound.export(out_filepath, format="wav")
+        '''
+        if use_preprocessing:
+            rawsound = AudioSegment.from_file(out_filepath, format='wav')
+            rawsound = rawsound.set_channels(1)
+            rawsound.export(out_filepath, format="wav")
+        '''
+
 
 if __name__ == "__main__":
     input_dir = "preprocess"
     output_dir = "preprocess_out"
     split_sil = False
-    use_preprocessing = True # for set samplerate to 44100, channel to mono
+    use_preprocessing = True    # for set samplerate to 44100, channel to mono
     use_norm = True
     use_extract = True
 

@@ -1,9 +1,9 @@
 # DDSP-SVC 사용자 매뉴얼
-본 매뉴얼은 Windows 환경 기준으로 설명하고 있으므로 Linux 등 다른 환경에서는 약간의 차이가 있을 수 있습니다.  
+본 매뉴얼은 Windows 환경 기준으로 설명하고 있으므로 Linux 등 다른 환경에서는 차이가 있을 수 있습니다.  
 
-**면책 조항 :** 본 문서와 프로젝트는 오로지 학습 교류 목적으로만 작성되었습니다.  
+**면책 조항 :** 본 문서와 프로젝트는 오로지 학술 교류 목적으로만 작성되었습니다.  
 합법적으로 획득한 데이터로만 모델을 훈련하고, 모델과 합성한 오디오를 불법적인 목적으로 사용하지 마십시오.  
-본 프로젝트의 모델을 사용하여 발생할 수 있는 저작권 등의 문제에 대해서 책임을 지지 않습니다.  
+본 프로젝트의 모델을 사용하여 발생할 수 있는 저작권 침해 등의 문제에 대한 책임을 지지 않습니다.  
 
 ## 0. 프로그램 설치 및 체크포인트 다운로드
 - FFmpeg 설치
@@ -41,23 +41,24 @@
     - 프롬프트에 `jupyter-lab`을 입력하면 브라우저 자동 실행
         - 만약 열리지 않으면 브라우저를 켜고 `localhost:8888/lab`으로 이동
     - Visual Studio Code 등 Jupyter Notebook을 지원하는 편집기에서도 실행 가능
-    - 좌측 파일 목록에서 `notebook2.ipynb`를 열고, 본인의 조건에 따라 전처리부터 학습까지 진행
+    - 좌측 파일 목록에서 `notebook2.ipynb`를 열고, 본인의 조건에 따라 전처리 후 학습까지 진행
 
 ## 3. 결과 추론
-- `notebook2.ipynb` 중 `4. 결과물 추출`에서 기본 환경 요소 설정 **(필수)**
+- `notebook2.ipynb` 중 `4. 결과물 추출`에서 해당 버전 셀의 기본 환경 요소 설정 **(필수)**
     ```
     # Values input Required
     'model_ckpt'        :   'exp/diffusion-test/model_00000.pt',    # 모델 체크포인트 경로
     'input'             :   'input.wav',                            # 원본 노래 파일 경로
     'output'            :   'output.wav',                           # 출력 파일 저장할 경로
     ```
-- 위 3가지 외에 다른 환경 설정(Optional)이 필요할 경우 `main_diff.py`의 요소별 help 참조   
+- 위 3가지 외에 다른 환경 설정(Optional)이 필요할 경우 해당 버전 파일의 요소별 help 참조
+    - 버전 6.0 사용 시 `main_reflow.py`, 5.0 사용 시 `main_diff.py`, 2.5 사용 시 `main.py`
 
 ---
 Language: **한국어/English** [简体中文(outdated)](./README_CHN.md)
 
 Translated into Korean by JS Park on 2024-06-11.  
-Last modified by JS Park on 2024-07-30.  
+Last modified by JS Park on 2024-08-14.  
 
 # DDSP-SVC
 
@@ -433,8 +434,10 @@ The front-end uses technologies such as sliding window, cross-fading, SOLA-based
 업데이트: 위상(phase) 보코더를 기반으로 한 접합 알고리즘이 추가되었지만, 대부분의 경우 SOLA 알고리즘이 이미 충분히 높은 접합 음질을 갖고 있으므로 기본적으로 꺼져 있습니다. 극도로 저지연 실시간 음질을 추구하는 경우 해당 옵션을 켜고 파라미터를 신중하게 튜닝하는 것을 고려할 수 있으며, 음질이 높아질 가능성이 있습니다. 그러나 많은 테스트에서 크로스 페이드 시간이 0.1초보다 길면 위상 보코더가 음질을 크게 저하시키는 것으로 나타났습니다.  
 Update: A splicing algorithm based on a phase vocoder is now added, but in most cases the SOLA algorithm already has high enough splicing sound quality, so it is turned off by default. If you are pursuing extreme low-latency real-time sound quality, you can consider turning it on and tuning the parameters carefully, and there is a possibility that the sound quality will be higher. However, a large number of tests have found that if the cross-fade time is longer than 0.1 seconds, the phase vocoder will cause a significant degradation in sound quality.
 
-## 8. 원글
+---
+
+## 원글 (Original)
 
 - [**yxlllc/DDSP-SVC**](https://github.com/yxlllc/DDSP-SVC)
 - [**wlsdml1114/DDSP-SVC-KOR**](https://github.com/wlsdml1114/DDSP-SVC-KOR)
-    - forked from yxlllc/DDSP-SVC (outdated version)
+    - forked from **yxlllc/DDSP-SVC** (outdated version)
