@@ -128,7 +128,7 @@ class AudioDataset(Dataset):
         for name_ext in tqdm(self.paths, total=len(self.paths)):
             name = os.path.splitext(name_ext)[0]
             path_audio = os.path.join(self.path_root, 'audio', name_ext)
-            duration = librosa.get_duration(filename = path_audio, sr = self.sample_rate)
+            duration = librosa.get_duration(path = path_audio, sr = self.sample_rate)
             
             path_f0 = os.path.join(self.path_root, 'f0', name_ext) + '.npy'
             f0 = np.load(path_f0)
