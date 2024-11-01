@@ -1,13 +1,11 @@
-import os
 import time
 import numpy as np
 import torch
-
 from logger.saver import Saver
 from logger import utils
 
 def test(args, model, loss_func, loader_test, saver):
-    print(' [*] testing...')
+    print(' [*] Testing...')
     model.eval()
 
     # losses
@@ -78,7 +76,7 @@ def train(args, initial_global_step, model, optimizer, loss_func, loader_train, 
     # run
     num_batches = len(loader_train)
     model.train()
-    saver.log_info('========== START Training ==========')
+    saver.log_info('========== Start Training ==========')
     for epoch in range(args.train.epochs):
         for batch_idx, data in enumerate(loader_train):
             saver.global_step_increment()
@@ -134,7 +132,7 @@ def train(args, initial_global_step, model, optimizer, loss_func, loader_train, 
                 
                 # log loss
                 saver.log_info(
-                    ' --- <validation> --- \nloss: {:.3f}. '.format(
+                    ' --- < Validation > --- \nloss: {:.3f}. '.format(
                         test_loss,
                     )
                 )

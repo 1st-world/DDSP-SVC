@@ -9,7 +9,7 @@ from torch import autocast
 from torch.cuda.amp import GradScaler
 
 def test(args, model, vocoder, loader_test, saver):
-    print(' [*] testing...')
+    print(' [*] Testing...')
     model.eval()
 
     # losses
@@ -104,7 +104,7 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
     num_batches = len(loader_train)
     start_epoch = initial_global_step // num_batches
     model.train()
-    saver.log_info('========== START Training ==========')
+    saver.log_info('========== Start Training ==========')
     scaler = GradScaler()
     if args.train.amp_dtype == 'fp32':
         dtype = torch.float32
@@ -190,7 +190,7 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
                 
                 # log loss
                 saver.log_info(
-                    ' --- <validation> --- \nloss: {:.3f}. '.format(
+                    ' --- < Validation > --- \nloss: {:.3f}. '.format(
                         test_loss,
                     )
                 )
